@@ -73,6 +73,7 @@ wss.on('connection', (ws) => {
               timestamp: new Date() - 0,
               channel: channelName
             }));
+            return;
           }
           
           let timestamp = new Date() - 0;
