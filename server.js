@@ -23,12 +23,12 @@ wss.on('connection', (ws) => {
         for (let memberUid in channels[channelName]) {
           let memberWs = clientsByUid[memberUid];
           if (memberWs) {
-            memberWs.send({
+            memberWs.send(JSON.stringify({
               type: msg.type == 'GOODBYE',
               timestamp: timestamp,
               channel: channelName,
               uid: ws.uid
-            });
+            }));
           }
         }
       }
@@ -41,12 +41,12 @@ wss.on('connection', (ws) => {
     try {
       msg = JSON.parse(msgString);
     } catch(e) {
-      ws.send({type: 'MALFORMED'});
+      ws.send(JSON.stringify({type: 'MALFORMED'}));
       return;
     }
     
     if (msg.type == 'MY_UID') {
-      ws.send({type: 'YOUR_UID', uid: ws.uid});
+      ws.send(JSON.stringify({type: 'YOUR_UID', uid: ws.uid}));
     } else if (msg.type == 'JOIN' || msg.type == 'QUIT' || msg.type == 'MEMBERS_QUERY') {
       let channelName = '' + msg.channel;
       if (channelName) {
@@ -62,12 +62,12 @@ wss.on('connection', (ws) => {
           for (let memberUid in channels[channelName]) {
             let memberWs = clientsByUid[memberUid];
             if (memberWs) {
-              memberWs.send({
+              memberWs.send(JSON.stringify({
                 type: msg.type == 'JOIN' ? 'HELLO' : 'GOODBYE',
                 timestamp: timestamp,
                 channel: channelName,
                 uid: ws.uid
-              });
+              }));
             }
           }
           
@@ -78,22 +78,22 @@ wss.on('connection', (ws) => {
         } else if (msg.type == 'MEMBERS_QUERY') {
           // You can only get the membership list for channels you are in.
           if (channels[channelName][ws.uid]) {
-            ws.send({
+            ws.send(JSON.stringify({
               type: 'MEMBERS_ANSWER',
               timestamp: new Date()-0,
               channel: channelName,
               members: Object.keys(channels[channelName]).sort()
-            });
+            }));
           } else {
-            ws.send({
+            ws.send(JSON.stringify({
               type: 'MEMBERS_REJECTED',
               timestamp: new Date() - 0,
               channel: channelName
-            });
+            }));
           }
         }
       } else {
-        ws.send({type: 'MALFORMED'});
+        ws.send(JSON.stringify({type: 'MALFORMED'}));
       }
     } else if (msg.type == 'SEND') {
       let channelName = '' + msg.channel;
@@ -104,28 +104,28 @@ wss.on('connection', (ws) => {
           for (let memberUid in channels[channelName]) {
             let memberWs = clientsByUid[memberUid];
             if (memberWs) {
-              memberWs.send({
+              memberWs.send(JSON.stringify({
                 type: 'BOUNCE',
                 timestamp: timestamp,
                 channel: channelName,
                 sender: ws.uid,
                 payload: payload
-              });
+              }));
             }
           }
         } else {
           // You can't send a message to a channel unless you are in it.
-          ws.send({
+          ws.send(JSON.stringify({
             type: 'SEND_REJECTED',
             timestamp: timestamp,
             channel: channelName
-          });
+          }));
         }
       } else {
-        ws.send({type: 'MALFORMED'});
+        ws.send(JSON.stringify({type: 'MALFORMED'}));
       }
     } else {
-      ws.send({type: 'MALFORMED'});
+      ws.send(JSON.stringify({type: 'MALFORMED'}));
     }
   });
 });
