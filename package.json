@@ -1,6 +1,11 @@
-"engines": {
-  "node": "13.1.x"
-},
-"scripts": {
-  "start": "node server.js"
+{
+  "name" : "bouncer-server",
+  "version" : "0.0.0",
+  "engines": {
+    "node": "13.1.x"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
 }
+
