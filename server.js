@@ -142,8 +142,9 @@ wss.on('connection', (ws) => {
       } else {
         ws.send(JSON.stringify({type: 'MALFORMED'}));
       }
-    } else if (msg.type == 'POKE') {
-      // Do nothing - this just keeps the websocket connection alive
+    } else if (msg.type == 'PING') {
+      // This just keeps the websocket connection alive
+      ws.send(JSON.stringify({type: 'PONG'}));
     } else {
       ws.send(JSON.stringify({type: 'MALFORMED'}));
     }
