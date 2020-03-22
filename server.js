@@ -54,8 +54,25 @@ wss.on('connection', (ws) => {
           if (msg.type == 'JOIN') {
             if (!channels[channelName]) {
               channels[channelName] = {};
+            } else {
+              if (channels[channelName][ws.uid]) {
+                // You cannot join a channel you are already in.
+                ws.send(JSON.stringify({
+                  type: 'JOIN_REJECTED',
+                  timestamp: new Date() - 0,
+                  channel: channelName
+                }));
+                return;
+              }
             }
             channels[channelName][ws.uid] = true;
+          } else if (!channels[channelName] || !channels[channelName][ws.uid]) {
+            // You cannot quit a channel you are not in.
+            ws.send(JSON.stringify({
+              type: 'QUIT_REJECTED',
+              timestamp: new Date() - 0,
+              channel: channelName
+            }));
           }
           
           let timestamp = new Date() - 0;
@@ -70,14 +87,14 @@ wss.on('connection', (ws) => {
               }));
             }
           }
-          
+
           if (msg.type == 'QUIT') {
             delete (channels[channelName])[ws.uid];
           }
           
         } else if (msg.type == 'MEMBERS_QUERY') {
           // You can only get the membership list for channels you are in.
-          if (channels[channelName][ws.uid]) {
+          if (channels[channelName] && channels[channelName][ws.uid]) {
             ws.send(JSON.stringify({
               type: 'MEMBERS_ANSWER',
               timestamp: new Date()-0,
@@ -100,7 +117,7 @@ wss.on('connection', (ws) => {
       let payload = msg.payload;
       if (channelName && payload) {
         let timestamp = new Date() - 0;
-        if (channels[channelName][ws.uid]) {
+        if (channels[channelName] && channels[channelName][ws.uid]) {
           for (let memberUid in channels[channelName]) {
             let memberWs = clientsByUid[memberUid];
             if (memberWs) {
