@@ -16,11 +16,11 @@ wss.on('connection', (ws) => {
   
   ws.on('close', () => {
     console.log('Client disconnected')
-    for (let channelName : channels) {
+    for (let channelName in channels) {
       if (channels[channelName][ws.uid]) {
         delete (channels[channelName])[ws.uid];
         let timestamp = new Date() - 0;
-        for (let memberUid : channels[channelName]) {
+        for (let memberUid in channels[channelName]) {
           let memberWs = clientsByUid[memberUid];
           if (memberWs) {
             memberWs.send({
@@ -51,7 +51,7 @@ wss.on('connection', (ws) => {
           }
           
           let timestamp = new Date() - 0;
-          for (let memberUid : channels[channelName]) {
+          for (let memberUid in channels[channelName]) {
             let memberWs = clientsByUid[memberUid];
             if (memberWs) {
               memberWs.send({
@@ -93,7 +93,7 @@ wss.on('connection', (ws) => {
       if (channelName && payload) {
         let timestamp = new Date() - 0;
         if (channels[channelName][ws.uid]) {
-          for (let memberUid : channels[channelName]) {
+          for (let memberUid in channels[channelName]) {
             let memberWs = clientsByUid[memberUid];
             if (memberWs) {
               memberWs.send({
