@@ -36,7 +36,15 @@ wss.on('connection', (ws) => {
     delete clientsByUid[ws.uid];
   });
   
-  ws.on('message', (msg) => {
+  ws.on('message', (msgString) => {
+    let msg;
+    try {
+      msg = JSON.parse(msgString);
+    } catch(e) {
+      ws.send({type: 'MALFORMED'});
+      return;
+    }
+    
     if (msg.type == 'MY_UID') {
       ws.send({type: 'YOUR_UID', uid: ws.uid});
     } else if (msg.type == 'JOIN' || msg.type == 'QUIT' || msg.type == 'MEMBERS_QUERY') {
