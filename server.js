@@ -142,6 +142,8 @@ wss.on('connection', (ws) => {
       } else {
         ws.send(JSON.stringify({type: 'MALFORMED'}));
       }
+    } else if (msg.type == 'POKE') {
+      // Do nothing - this just keeps the websocket connection alive
     } else {
       ws.send(JSON.stringify({type: 'MALFORMED'}));
     }
