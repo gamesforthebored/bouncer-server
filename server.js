@@ -24,7 +24,7 @@ wss.on('connection', (ws) => {
           let memberWs = clientsByUid[memberUid];
           if (memberWs) {
             memberWs.send(JSON.stringify({
-              type: msg.type == 'GOODBYE',
+              type: 'GOODBYE',
               timestamp: timestamp,
               channel: channelName,
               uid: ws.uid
